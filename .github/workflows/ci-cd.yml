@@ -68,9 +68,12 @@ jobs:
           echo "$GCP_SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
+          # Add the GCP VM's public SSH key to known hosts for security
+          ssh-keyscan -H $GCP_VM_IP >> ~/.ssh/known_hosts
+
           # SSH into the VM and deploy the app
-          ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null username@$GCP_VM_IP <<EOF
-            cd /home/username/project  # Navigate to your project directory on the VM
+          ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null rotem1535@$GCP_VM_IP <<EOF
+            cd /home/rotem1535/project  # Navigate to your project directory on the VM
             git pull origin main  # Pull the latest code
             docker-compose down  # Stop the current running containers
             docker-compose up -d  # Restart the containers with the new image
