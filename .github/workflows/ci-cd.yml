@@ -3,58 +3,57 @@ name: auto docker-deploy after push
 on:
   push:
     branches:
-     - main
+      - main
   pull_request:
     branches:
-    - main
-  
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. reading the code
+      # 1. checking out the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. python setup
+      # 2. setting up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      # 3. installing dependencies
+      # 3. installing dependencies (installing from requirements.txt)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. tests (Optional if you have tests)
+      # 4. running tests (Optional, if you have any tests set up)
       - name: Run tests
         run: |
-          # This is an example. Add your test command here if you have any.
+          # Example test command (replace with your actual test command)
           python -m unittest discover
 
-      # 5. building docker image --> registry
-      - name: Build and push Docker image
+      # 5. building Docker image and pushing to Artifact Registry
+      - name: Build and push Docker image to Artifact Registry
         run: |
-          docker build -t yourusername/yourapp:latest .
-          docker push yourusername/yourapp:latest
+          docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
+          docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 6. deploy --> GCP (SSH into VM and restart app)
-      - name: Deploy to GCP
+      # 6. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
+      - name: Deploy to GCP VM
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          GCP_VM_IP: ${{ secrets.GCP_VM_IP }}
+          SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}  # Make sure you added the key in GitHub secrets
+          GCP_VM_IP: ${{ secrets.GCP_VM_IP }}  # Make sure you added the IP in GitHub secrets
         run: |
-          # defining PRIVATE_KEY to a file
+          # Writing SSH private key to a file
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
-          # SSH --> VM and deploying the app
+          # SSH into the VM and deploy the app
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null username@$GCP_VM_IP <<EOF
-            cd /home/username/project
-            git pull origin main
-            docker-compose down
-            docker-compose up -d
+            cd /home/username/project  # Navigate to your project directory on the VM
+            git pull origin main  # Pull the latest code
+            docker-compose down  # Stop the current running containers
+            docker-compose up -d  # Restart the containers with the new image
           EOF
