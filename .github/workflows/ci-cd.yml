@@ -65,8 +65,11 @@ jobs:
           GCP_VM_IP: ${{ secrets.GCP_VM_IP }}  # Make sure you added the IP in GitHub secrets
         run: |
           # Writing SSH private key to a file
-          echo "$GCP_SSH_PRIVATE_KEY" > private_key.pem
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
+
+          # Ensure the .ssh directory exists
+          mkdir -p ~/.ssh
 
           # Add the GCP VM's public SSH key to known hosts for security
           ssh-keyscan -H $GCP_VM_IP >> ~/.ssh/known_hosts
