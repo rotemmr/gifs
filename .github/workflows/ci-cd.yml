@@ -56,7 +56,7 @@ jobs:
           GCP_VM_IP: ${{ secrets.GCP_VM_IP }}  # Make sure you added the IP in GitHub secrets
         run: |
           # Writing SSH private key to a file
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          echo "$GCP_SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
           # SSH into the VM and deploy the app
