@@ -34,13 +34,22 @@ jobs:
           # Example test command (replace with your actual test command)
           python -m unittest discover
 
-      # 5. building Docker image and pushing to Artifact Registry
+      # 5. authenticating with Google Cloud using the service account key
+      - name: Authenticate with GCP
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}  # The service account key from GitHub Secrets
+        run: |
+          echo "$GCP_SA_KEY" > $HOME/gcp-key.json
+          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
+          gcloud config set project devops-451510  # Set the project ID
+
+      # 6. building Docker image and pushing to Artifact Registry
       - name: Build and push Docker image to Artifact Registry
         run: |
           docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
           docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 6. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
+      # 7. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
       - name: Deploy to GCP VM
         env:
           SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}  # Make sure you added the key in GitHub secrets
