@@ -43,13 +43,22 @@ jobs:
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
           gcloud config set project devops-451510  # Set the project ID
 
-      # 6. building Docker image and pushing to Artifact Registry
+      # 6. Enable Artifact Registry API (if not already enabled)
+      - name: Enable Artifact Registry API
+        run: |
+          gcloud services enable artifactregistry.googleapis.com
+
+      # 7. building Docker image and pushing to Artifact Registry
       - name: Build and push Docker image to Artifact Registry
         run: |
+          # Authenticate Docker with GCP
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          
+          # Build and push image
           docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
           docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 7. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
+      # 8. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
       - name: Deploy to GCP VM
         env:
           SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}  # Make sure you added the key in GitHub secrets
