@@ -46,7 +46,6 @@ jobs:
       - name: Install gke-gcloud-auth-plugin
         run: |
           curl -sSL https://dl.google.com/cloudsdk/release/google-cloud-sdk.tar.gz | tar xz -C $HOME
-          $HOME/google-cloud-sdk/install.sh --quiet
           $HOME/google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin --quiet
 
       # 7. Set up Kubernetes authentication
