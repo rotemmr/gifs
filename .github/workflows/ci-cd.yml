@@ -12,72 +12,51 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. checking out the code from the repository
+      # 1. Checking out the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. setting up Python environment
+      # 2. Setting up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      # 3. installing dependencies (installing from requirements.txt)
+      # 3. Installing dependencies (installing from requirements.txt)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. running tests (Optional, if you have any tests set up)
+      # 4. Running tests (Optional, if you have any tests set up)
       - name: Run tests
         run: |
-          # Example test command (replace with your actual test command)
           python -m unittest discover
 
-      # 5. authenticating with Google Cloud using the service account key
+      # 5. Authenticating with Google Cloud using the service account key
       - name: Authenticate with GCP
         env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}  # The service account key from GitHub Secrets
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           echo "$GCP_SA_KEY" > $HOME/gcp-key.json
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
-          gcloud config set project devops-451510  # Set the project ID
+          gcloud config set project devops-451510
 
-      # 6. Enable Artifact Registry API (if not already enabled)
-      - name: Enable Artifact Registry API
+      # 6. Set up Kubernetes authentication
+      - name: Set up kubectl
         run: |
-          gcloud services enable artifactregistry.googleapis.com
+          gcloud container clusters get-credentials my-cluster --zone us-central1-a --project devops-451510
+          kubectl config use-context gke_devops-451510_us-central1-a_my-cluster
 
-      # 7. building Docker image and pushing to Artifact Registry
+      # 7. Building Docker image and pushing to Artifact Registry
       - name: Build and push Docker image to Artifact Registry
         run: |
-          # Authenticate Docker with GCP
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-          
-          # Build and push image
           docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
           docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 8. deploying to GCP VM via SSH (using the private key stored in GitHub Secrets)
-      - name: Deploy to GCP VM
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_PRIVATE_KEY }}  # Make sure you added the key in GitHub secrets
-          GCP_VM_IP: ${{ secrets.GCP_VM_IP }}  # Make sure you added the IP in GitHub secrets
+      # 8. Deploy to Kubernetes
+      - name: Deploy to Kubernetes
         run: |
-          # Writing SSH private key to a file
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-
-          # Ensure the .ssh directory exists
-          mkdir -p ~/.ssh
-
-          # Add the GCP VM's public SSH key to known hosts for security
-          ssh-keyscan -H $GCP_VM_IP >> ~/.ssh/known_hosts
-
-          # SSH into the VM and deploy the app
-          ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null rotem1535@$GCP_VM_IP <<EOF
-            cd /home/rotem1535/project  # Navigate to your project directory on the VM
-            git pull origin main  # Pull the latest code
-            docker-compose down  # Stop the current running containers
-            docker-compose up -d  # Restart the containers with the new image
-          EOF
+          kubectl set image deployment/flask-app-deployment flask-app=us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
+          kubectl scale deployment flask-app-deployment --replicas=3
