@@ -43,10 +43,9 @@ jobs:
           gcloud config set project devops-451510
 
       # 6. Install the gke-gcloud-auth-plugin
-      #- name: Install gke-gcloud-auth-plugin
-      #  run: |
-      #    curl -sSL https://dl.google.com/cloudsdk/release/google-cloud-sdk.tar.gz | tar xz -C $HOME
-      #    $HOME/google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin --quiet
+      - name: Install gke-gcloud-auth-plugin
+        run: | 
+          gke-gcloud-auth-plugin --version
 
       # 7. Set up Kubernetes authentication
       - name: Set up kubectl
