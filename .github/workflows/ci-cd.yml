@@ -42,20 +42,27 @@ jobs:
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
           gcloud config set project devops-451510
 
-      # 6. Set up Kubernetes authentication
+      # 6. Install the gke-gcloud-auth-plugin
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          curl -sSL https://dl.google.com/cloudsdk/release/google-cloud-sdk.tar.gz | tar xz -C $HOME
+          $HOME/google-cloud-sdk/install.sh
+          $HOME/google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin
+
+      # 7. Set up Kubernetes authentication
       - name: Set up kubectl
         run: |
           gcloud container clusters get-credentials flask-cluster --zone us-central1-a --project devops-451510
           kubectl config use-context gke_devops-451510_us-central1-a_flask-cluster
 
-      # 7. Building Docker image and pushing to Artifact Registry
+      # 8. Building Docker image and pushing to Artifact Registry
       - name: Build and push Docker image to Artifact Registry
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
           docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 8. Deploy to Kubernetes
+      # 9. Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/flask-app-deployment flask-app=us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
