@@ -45,6 +45,8 @@ jobs:
       # 6. Install the gke-gcloud-auth-plugin
       - name: Install gke-gcloud-auth-plugin
         run: | 
+          sudo apt-get update
+          sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
           gke-gcloud-auth-plugin --version
 
       # 7. Set up Kubernetes authentication
