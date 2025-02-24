@@ -45,8 +45,8 @@ jobs:
       # 6. Set up Kubernetes authentication
       - name: Set up kubectl
         run: |
-          gcloud container clusters get-credentials my-cluster --zone us-central1-a --project devops-451510
-          kubectl config use-context gke_devops-451510_us-central1-a_my-cluster
+          gcloud container clusters get-credentials flask-cluster --zone us-central1-a --project devops-451510
+          kubectl config use-context gke_devops-451510_us-central1-a_flask-cluster
 
       # 7. Building Docker image and pushing to Artifact Registry
       - name: Build and push Docker image to Artifact Registry
