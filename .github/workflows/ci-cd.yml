@@ -43,30 +43,26 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           gcloud config set project devops-451510
 
-      # 6. Install GKE Auth Plugin (Required for Kubernetes authentication)
+      # 6. Add Google Cloud GPG key to avoid "NO_PUBKEY" issue
+      - name: Add GCP GPG Key
+        run: |
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /etc/apt/trusted.gpg.d/google.asc
+
+      # 7. Install Google Cloud CLI and GKE Auth Plugin
       - name: Install Google Cloud CLI and GKE Auth Plugin
         run: |
-          # Remove pre-installed google cloud cli if needed
-          sudo apt-get remove -y google-cloud-cli || true
-          sudo rm -rf /usr/lib/google-cloud-sdk
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin
 
-          # Install the latest google cloud cli
-          export CLOUD_SDK_REPO="cloud-sdk"
-          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-          sudo apt-get update && sudo apt-get install -y google-cloud-cli
-
-          # Install the GKE Auth Plugin
-          sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
-
-      # 7. Set up Kubernetes authentication
+      # 8. Set up Kubernetes authentication
       - name: Get GKE Cluster Credentials
         run: |
-          gcloud container clusters get-credentials flask-cluster --zone us-central1-a --project devops-451510
+          gcloud container clusters get-credentials flask-cluster \
+            --zone us-central1-a --project devops-451510
           kubectl config current-context
           kubectl config view
 
-      # 8. Build and push Docker image to Google Artifact Registry
+      # 9. Build and push Docker image to Google Artifact Registry
       - name: Build and Push Docker Image
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
@@ -74,7 +70,7 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
-      # 9. Deploy to Kubernetes and restart pods
+      # 10. Deploy to Kubernetes and restart pods
       - name: Deploy to Kubernetes
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
