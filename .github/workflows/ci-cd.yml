@@ -48,11 +48,14 @@ jobs:
         run: |
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /etc/apt/trusted.gpg.d/google.asc
 
-      # 7. Install Google Cloud CLI and GKE Auth Plugin
-      - name: Install Google Cloud CLI and GKE Auth Plugin
+      # 7. Install the necessary components (fix for package not found issue)
+      - name: Install GKE Auth Plugin
         run: |
-          sudo apt-get update
-          sudo apt-get install -y google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          sudo apt update
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin kubectl
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
       # 8. Set up Kubernetes authentication
       - name: Get GKE Cluster Credentials
