@@ -46,13 +46,23 @@ jobs:
       # 6. Install GKE Auth Plugin (Required for Kubernetes authentication)
       - name: Install Google Cloud CLI and GKE Auth Plugin
         run: |
-          gcloud components install gke-gcloud-auth-plugin
+          # Remove pre-installed google cloud cli if needed
+          sudo apt-get remove -y google-cloud-cli || true
+          sudo rm -rf /usr/lib/google-cloud-sdk
+
+          # Install the latest google cloud cli
+          export CLOUD_SDK_REPO="cloud-sdk"
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          sudo apt-get update && sudo apt-get install -y google-cloud-cli
+
+          # Install the GKE Auth Plugin
+          sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
 
       # 7. Set up Kubernetes authentication
       - name: Get GKE Cluster Credentials
         run: |
-          gcloud container clusters get-credentials flask-cluster \
-            --zone us-central1-a --project devops-451510
+          gcloud container clusters get-credentials flask-cluster --zone us-central1-a --project devops-451510
           kubectl config current-context
           kubectl config view
 
