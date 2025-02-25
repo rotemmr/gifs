@@ -1,4 +1,4 @@
-name: auto docker-deploy after push
+name: Auto Docker-Deploy After Push
 
 on:
   push:
@@ -12,28 +12,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checking out the code from the repository
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Setting up Python environment
+      # 2. Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      # 3. Installing dependencies (installing from requirements.txt)
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Running tests (Optional, if you have any tests set up)
+      # 4. Run tests (Optional)
       - name: Run tests
         run: |
           python -m unittest discover
 
-      # 5. Authenticating with Google Cloud using the service account key
+      # 5. Authenticate with Google Cloud
       - name: Authenticate with GCP
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
@@ -42,30 +42,30 @@ jobs:
           gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
           gcloud config set project devops-451510
 
-      # 6. Install the gke-gcloud-auth-plugin
+      # 6. Install GKE Auth Plugin (Required for Kubernetes authentication)
       - name: Install Google Cloud CLI and GKE Auth Plugin
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-cloud-cli
           sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
           gke-gcloud-auth-plugin --version
 
-
       # 7. Set up Kubernetes authentication
-      - name: Set up kubectl
+      - name: Get GKE Cluster Credentials
         run: |
           gcloud container clusters get-credentials flask-cluster --zone us-central1-a --project devops-451510
-          kubectl config use-context gke_devops-451510_us-central1-a_flask-cluster
+          kubectl config current-context
+          kubectl config view
 
-      # 8. Building Docker image and pushing to Artifact Registry
-      - name: Build and push Docker image to Artifact Registry
+      # 8. Build and push Docker image to Artifact Registry
+      - name: Build and push Docker image
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker build -t us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest .
           docker push us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
 
-      # 9. Deploy to Kubernetes
+      # 9. Deploy to Kubernetes and restart pods
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/flask-app-deployment flask-app=us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest
-          kubectl scale deployment flask-app-deployment --replicas=3
+          kubectl rollout restart deployment flask-app-deployment
+          kubectl get pods -o wide
