@@ -13,29 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
-      - name: Checkout Code
+      # checkout code
+      - name: checkout code
         uses: actions/checkout@v2
 
-      # 2. Set up Python environment
-      - name: Set Up Python
+      # set up python environment
+      - name: set up python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      # 3. Install dependencies
-      - name: Install Dependencies
+      # install dependencies
+      - name: install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Run Tests
-      - name: Run Tests
+      # run tests
+      - name: run tests
         run: |
           python -m unittest discover
 
-      # 5. Authenticate with Google Cloud
-      - name: Authenticate with GCP
+      # authenticate with google cloud
+      - name: authenticate with gcp
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
@@ -43,13 +43,13 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           gcloud config set project devops-451510
 
-      # 6. Add Google Cloud GPG key to avoid "NO_PUBKEY" issue
-      - name: Add GCP GPG Key
+      # add google cloud gpg key to avoid "no_pubkey" issue
+      - name: add gcp gpg key
         run: |
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /etc/apt/trusted.gpg.d/google.asc
 
-      # 7. Install the necessary components (fix for package not found issue)
-      - name: Install GKE Auth Plugin
+      # install the necessary components (fix for package not found issue)
+      - name: install gke auth plugin
         run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
@@ -57,24 +57,24 @@ jobs:
           sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin kubectl
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-      # 8. Set up Kubernetes authentication
-      - name: Get GKE Cluster Credentials
+      # set up kubernetes authentication
+      - name: get gke cluster credentials
         run: |
           gcloud container clusters get-credentials flask-cluster \
             --zone us-central1-a --project devops-451510
           kubectl config current-context
           kubectl config view
 
-      # 9. Build and push Docker image to Google Artifact Registry
-      - name: Build and Push Docker Image
+      # build and push docker image to google artifact registry
+      - name: build and push docker image
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
-      # 10. Deploy to Kubernetes and restart pods
-      - name: Deploy to Kubernetes
+      # deploy to kubernetes and restart pods
+      - name: deploy to kubernetes
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
           kubectl set image deployment/flask-app-deployment flask-app=$IMAGE_NAME
