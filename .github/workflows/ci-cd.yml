@@ -89,7 +89,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform-gke
-          terraform plan
+          terraform plan -var "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}"
 
       # Apply Terraform
       - name: Terraform Apply

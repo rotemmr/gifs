@@ -1,3 +1,8 @@
+variable "GCP_SA_KEY" {
+  type        = string
+  description = "Google Cloud Service Account Key"
+}
+
 provider "google" {
   credentials = jsondecode(var.GCP_SA_KEY)
   project     = "devops-451510"
