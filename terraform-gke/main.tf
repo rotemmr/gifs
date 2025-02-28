@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = file("/home/rotem1535/keys/service-acc.json")
+  credentials = jsondecode(var.GCP_SA_KEY)
   project     = "devops-451510"
   region      = "us-central1"
 }
