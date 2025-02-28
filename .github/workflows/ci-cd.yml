@@ -85,11 +85,16 @@ jobs:
           cd terraform-gke
           terraform init
 
-      # Plan Terraform
+       # Set up GCP Service Account Key for Terraform
+      - name: Create temporary file with GCP service account key
+        run: |
+          echo "GCP_SA_KEY = \"${{ secrets.GCP_SA_KEY }}\"" > /tmp/gcp-key.tfvars
+
+      # Run Terraform Plan
       - name: Terraform Plan
         run: |
           cd terraform-gke
-          terraform plan -var "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}"
+          terraform plan -var-file=/tmp/gcp-key.tfvars
 
       # Apply Terraform
       - name: Terraform Apply
