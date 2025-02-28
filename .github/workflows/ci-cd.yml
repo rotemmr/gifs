@@ -13,28 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
+      # checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Python environment
+      # Move to the directory where Terraform files are located
+      - name: Change directory to Terraform folder
+        run: cd terraform-gke
+
+      # set up python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      # Install dependencies
+      # install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Run tests
+      # run tests
       - name: Run tests
         run: |
           python -m unittest discover
 
-      # Authenticate with Google Cloud
+      # authenticate with google cloud
       - name: Authenticate with GCP
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
@@ -43,17 +47,21 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           gcloud config set project devops-451510
 
-      # Install necessary components for GKE
-      - name: Install GKE auth plugin
+      # add google cloud gpg key to avoid "no_pubkey" issue
+      - name: Add GCP GPG key
         run: |
           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /etc/apt/trusted.gpg.d/google.asc
+
+      # install the necessary components (fix for package not found issue)
+      - name: Install GKE auth plugin
+        run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - 
           sudo apt update
           sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin kubectl
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-      # Set up Kubernetes authentication
+      # set up kubernetes authentication
       - name: Get GKE cluster credentials
         run: |
           gcloud container clusters get-credentials flask-cluster \
@@ -61,34 +69,30 @@ jobs:
           kubectl config current-context
           kubectl config view
 
-      # Install Terraform
-      - name: Install Terraform
-        run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt update && sudo apt install terraform
-
       # Initialize Terraform
       - name: Terraform Init
         run: |
+          cd terraform-gke
           terraform init
 
-      # Run Terraform Plan (for preview)
+      # Plan Terraform
       - name: Terraform Plan
         run: |
+          cd terraform-gke
           terraform plan
 
-      # Apply Terraform (This will make the changes)
+      # Apply Terraform
       - name: Terraform Apply
         run: |
+          cd terraform-gke
           terraform apply -auto-approve
 
-      # Build and push Docker image
+      # Build and push Docker image to Google Artifact Registry
       - name: Build and Push Docker Image
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
           docker build -t $IMAGE_NAME .
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
 
       # Deploy to Kubernetes and restart pods
