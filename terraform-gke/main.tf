@@ -4,7 +4,7 @@ variable "GCP_SA_KEY" {
 }
 
 provider "google" {
-  credentials = jsondecode(var.GCP_SA_KEY)
+  credentials = file(var.credentials)
   project     = "devops-451510"
   region      = "us-central1"
 }
