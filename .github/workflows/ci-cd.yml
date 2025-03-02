@@ -88,6 +88,7 @@ jobs:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           cd terraform-gke
+          terraform refresh -var="GCP_SA_KEY=$GCP_SA_KEY"
           terraform apply -auto-approve -var="GCP_SA_KEY=$GCP_SA_KEY" -replace=kubernetes_deployment.flask_app
  
 
