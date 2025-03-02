@@ -23,54 +23,6 @@ provider "kubernetes" {
   token                  = data.google_client_config.default.access_token
 }
 
-resource "kubernetes_deployment" "flask_app" {
-  metadata {
-    name      = "flask-app-deployment"  # Ensure this matches the existing deployment name
-    namespace = "default"
-    labels = {
-      app = "flask-app"
-    }
-  }
-
-  spec {
-    replicas = 3  # Adjust as needed
-
-    selector {
-      match_labels = {
-        app = "flask-app"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "flask-app"
-        }
-      }
-
-      spec {
-        container {
-          name  = "flask-container"
-          image = "us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
-          port {
-            container_port = 5000
-          }
-          resources {
-            limits = {
-              cpu    = "500m"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "256Mi"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 output "cluster_endpoint" {
   value = data.google_container_cluster.primary.endpoint
 }
