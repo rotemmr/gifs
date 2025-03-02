@@ -87,6 +87,7 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
+          cd terraform-gke  
           terraform import kubernetes_deployment.flask_app default/flask-app-deployment
 
       - name: Terraform Apply  
