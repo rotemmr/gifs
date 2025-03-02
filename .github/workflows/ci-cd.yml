@@ -88,7 +88,10 @@ jobs:
           TF_VAR_GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           cd terraform-gke
-          terraform apply -auto-approve
+          # Write the GCP credentials to a temporary file
+          echo "$TF_VAR_GCP_SA_KEY" > /tmp/gcp-key.json
+          # Use the temporary file for credentials
+          terraform apply -auto-approve -var="google_credentials=/tmp/gcp-key.json"
  
 
       # Build and push Docker image to Google Artifact Registry
