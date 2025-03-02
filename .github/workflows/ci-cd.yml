@@ -83,13 +83,19 @@ jobs:
           terraform init
 
       # Apply Terraform
+      - name: Terraform Import
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          terraform import kubernetes_deployment.flask_app default/flask-app-deployment
+
       - name: Terraform Apply  
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           cd terraform-gke
           terraform refresh -var="GCP_SA_KEY=$GCP_SA_KEY"
-          terraform apply -auto-approve -var="GCP_SA_KEY=$GCP_SA_KEY" -replace=kubernetes_deployment.flask_app
+          terraform apply -auto-approve -var="GCP_SA_KEY=$GCP_SA_KEY" 
  
 
       # Build and push Docker image to Google Artifact Registry
