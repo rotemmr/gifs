@@ -85,12 +85,10 @@ jobs:
       # Apply Terraform
       - name: Terraform Apply  
         env:
-          TF_VAR_GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           cd terraform-gke
-          # Write the GCP credentials to a temporary file
-          echo "$TF_VAR_GCP_SA_KEY" > /tmp/gcp-key.json
-          # Use the temporary file for credentials
+          echo "$GCP_SA_KEY" > /tmp/gcp-key.json
           terraform apply -auto-approve -var="google_credentials=/tmp/gcp-key.json"
  
 
