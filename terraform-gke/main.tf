@@ -23,10 +23,9 @@ provider "kubernetes" {
   token                  = data.google_client_config.default.access_token
 }
 
-# Update deployment name to match the existing one
 resource "kubernetes_deployment" "flask_app" {
   metadata {
-    name      = "flask-app-deployment"  # Use the correct deployment name
+    name      = "flask-app-deployment"  # Ensure this matches the existing deployment name
     namespace = "default"
     labels = {
       app = "flask-app"
