@@ -84,6 +84,8 @@ jobs:
 
       # Apply Terraform
       - name: Terraform Apply
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           cd terraform-gke
           terraform apply -auto-approve
