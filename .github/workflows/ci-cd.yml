@@ -83,12 +83,11 @@ jobs:
           terraform init
 
       # Apply Terraform
-      - name: Terraform Apply
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      - name: Terraform Apply  
         run: |
           cd terraform-gke
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var="GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}"
+ 
 
       # Build and push Docker image to Google Artifact Registry
       - name: Build and Push Docker Image
