@@ -22,7 +22,7 @@ def get_git_version():
 @app.route("/")
 def home():
     version = get_git_version()
-    return render_template("homepage.html")
+    return render_template("homepage.html", version=version)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
