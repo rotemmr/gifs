@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dawgif</title>
     <link rel="stylesheet" href="static/style.css">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/x-icon"/>
 </head>
 <body>
     <div class="header">
@@ -52,7 +52,7 @@
 
         function createFloatingDog() {
             const dog = document.createElement("img");
-            dog.src = "static/dawg.png";
+            dog.src = "static/images/dawg.png";
             dog.classList.add("floating-dog");
 
             // Random position and size
