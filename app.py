@@ -1,16 +1,23 @@
 from flask import Flask, render_template
 import subprocess
+import shutil
 
 app = Flask(__name__)
 
 def get_git_version():
     try:
+        git_path = shutil.which("git")
+        if git_path is None:
+            raise FileNotFoundError("Git is not installed or not found in PATH.")
+        
         # latest tag in repo
-        version = subprocess.check_output(["/usr/bin/git", "describe", "--tags", "--abbrev=0"]).strip().decode()
+        version = subprocess.check_output([git_path, "describe", "--tags", "--abbrev=0"]).strip().decode()
         return version
     except subprocess.CalledProcessError:
         # default when theres no tag
         return "1.0.0"
+    except FileNotFoundError:
+        return "Git not found"
 
 @app.route("/")
 def home():
