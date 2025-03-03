@@ -24,9 +24,6 @@ jobs:
           unzip terraform_1.7.5_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
           terraform --version
-      # move to the directory where Terraform files are located
-      - name: Change directory to Terraform folder
-        run: cd terraform-gke
 
       # set up python environment
       - name: Set up Python
@@ -90,12 +87,24 @@ jobs:
           cd terraform-gke
           terraform refresh -var="GCP_SA_KEY=$GCP_SA_KEY"
           terraform apply -auto-approve -var="GCP_SA_KEY=$GCP_SA_KEY" 
- 
+
+      # generate a new tag based on commit count
+      - name: Generate Tag
+        id: tag
+        run: |
+          # Get the number of commits in the repo, then add 1 to it
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          VERSION="1.0.${COMMIT_COUNT}"
+          echo "Generated version: $VERSION"
+          
+          # Create and push the new tag
+          git tag $VERSION
+          git push origin $VERSION
 
       # build and push docker img --> GAR 
       - name: Build and Push Docker Image
         run: |
-          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
+          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           docker build -t $IMAGE_NAME .
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
@@ -103,7 +112,7 @@ jobs:
       # deploy --> kubernetes + restart pods
       - name: Deploy to Kubernetes
         run: |
-          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:latest"
+          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           kubectl set image deployment/flask-app-deployment flask-container=$IMAGE_NAME
           kubectl rollout restart deployment flask-app-deployment
           kubectl get pods -o wide
