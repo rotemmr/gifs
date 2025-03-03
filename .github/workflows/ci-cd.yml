@@ -103,22 +103,9 @@ jobs:
           git config --global user.name "github-actions[bot]"  # Keeps the actions bot identity
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # List existing tags before creating new one
-          echo "Existing tags before creating new one:"
-          git tag
-
-          # Create the new tag
-          git tag $VERSION
-          echo "Created tag: $VERSION"
-
-          # List tags after creating the new tag
-          echo "Tags after creating new tag:"
-          git tag
-
-          # Set the remote URL with the token for authentication
+          # Use the GH_ADMIN secret for authentication (the correct token here)
           git remote set-url origin https://x-access-token:${{ secrets.GH_ADMIN }}@github.com/rotemmr/gifs
-
-          # Push the new tag
+          git tag $VERSION
           git push origin $VERSION
 
 
