@@ -99,17 +99,12 @@ jobs:
           VERSION="1.0.${COMMIT_COUNT}"
           echo "Generated version: $VERSION"
 
-          # Set the token for authentication
-          git config --global user.name "github-actions[bot]"
+          # Set the token for authentication using the GH_ADMIN secret
+          git config --global user.name "github-actions[bot]"  # Keeps the actions bot identity
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Create and push the new tag
-          git tag $VERSION
-
-          # Set the remote URL to authenticate using the GitHub token
-          git remote set-url origin https://x-access-token:${{ secrets.GH_ADMIN }}@github.com/rotemmr/gifs  # Use secrets.GH_ADMIN correctly
-
-          # Push the tag to the repository
+          # Use the personal access token (GH_ADMIN) for authentication
+          git remote set-url origin https://x-access-token:${{ secrets.GH_ADMIN }}@github.com/rotemmr/gifs
           git push origin $VERSION
 
 
