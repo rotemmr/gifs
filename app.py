@@ -6,7 +6,7 @@ app = Flask(__name__)
 def get_git_version():
     try:
         # latest tag in repo
-        version = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).strip().decode()
+        version = subprocess.check_output(["/usr/bin/git", "describe", "--tags", "--abbrev=0"]).strip().decode()
         return version
     except subprocess.CalledProcessError:
         # default when theres no tag
