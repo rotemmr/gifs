@@ -91,7 +91,7 @@ jobs:
       # Generate a new tag based on commit count
       - name: Generate Tag
         env:
-          GH_ADMIN: ${{ secrets.GH_ADMIN }}  # Correctly reference GH_ADMIN secret
+          GH_ADMIN: ${{ secrets.GH_ADMIN }}
         id: tag
         run: |
           # Get the number of commits in the repo, then add 1 to it
@@ -103,8 +103,22 @@ jobs:
           git config --global user.name "github-actions[bot]"  # Keeps the actions bot identity
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Use the personal access token (GH_ADMIN) for authentication
+          # List existing tags before creating new one
+          echo "Existing tags before creating new one:"
+          git tag
+
+          # Create the new tag
+          git tag $VERSION
+          echo "Created tag: $VERSION"
+
+          # List tags after creating the new tag
+          echo "Tags after creating new tag:"
+          git tag
+
+          # Set the remote URL with the token for authentication
           git remote set-url origin https://x-access-token:${{ secrets.GH_ADMIN }}@github.com/rotemmr/gifs
+
+          # Push the new tag
           git push origin $VERSION
 
 
