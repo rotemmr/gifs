@@ -99,15 +99,23 @@ jobs:
           VERSION="1.0.${COMMIT_COUNT}"
           echo "Generated version: $VERSION"
 
-          # Set the token for authentication using the GITHUB_TOKEN
-          git config --global user.name "github-actions[bot]"  # Keeps the actions bot identity
+          # Set up Git and authenticate using the GITHUB_TOKEN
+          git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Debugging: Print the remote URL
-          git remote -v
-
-          # Use the GITHUB_TOKEN for authentication
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/rotemmr/gifs
+
+          # Fetch existing tags from the remote
+          git fetch --tags
+
+          # Check if the tag already exists, if it does increment
+          while git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; do
+            echo "Tag $VERSION already exists, incrementing version."
+            COMMIT_COUNT=$((COMMIT_COUNT + 1))
+            VERSION="1.0.${COMMIT_COUNT}"
+            echo "New version: $VERSION"
+          done
+
+          # Create and push the new tag
           git tag $VERSION
           git push origin $VERSION
 
