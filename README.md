@@ -23,20 +23,47 @@ Dawgif is a **Flask-based** web application that dynamically serves a random dog
 
 ## ⚙️ CI/CD Pipeline Flow  
 
-### 1️⃣ Code Push & CI/CD Pipeline Trigger  
-- A push to the repository triggers **GitHub Actions**, which initiates the pipeline.  
+This project uses **GitHub Actions** to automate testing, building, and deployment. Below is the step-by-step flow of the CI/CD pipeline:  
 
-### 2️⃣ Building & Pushing Docker Image  
-- The Flask app is containerized using **Docker** and pushed to **Google Artifact Registry**.  
+### 1️⃣ Code Push & CI/CD Trigger  
+- A push to the `main` branch or a pull request triggers the pipeline.  
 
-### 3️⃣ Testing with Docker Compose  
-- The application is tested locally to ensure stability before deployment.  
+### 2️⃣ Checkout Repository  
+- The workflow pulls the latest code from the repository.  
 
-### 4️⃣ Infrastructure Provisioning with Terraform  
-- A **GKE cluster** is provisioned using **Terraform**.  
+### 3️⃣ Install Terraform  
+- Downloads and installs **Terraform** for infrastructure management.  
 
-### 5️⃣ Deployment to Kubernetes  
-- The application is deployed to **GKE** using Kubernetes manifests.  
+### 4️⃣ Set Up Python Environment  
+- Installs Python and dependencies from `requirements.txt`.  
+
+### 5️⃣ Run Tests  
+- Executes unit tests to ensure the application is working correctly.  
+
+### 6️⃣ Authenticate with Google Cloud  
+- Uses a **service account key** to log in to Google Cloud and set the correct project.  
+
+### 7️⃣ Install GKE Auth Plugin & kubectl  
+- Installs tools required to interact with **Google Kubernetes Engine (GKE)**.  
+
+### 8️⃣ Get GKE Cluster Credentials  
+- Retrieves Kubernetes credentials to deploy the application.  
+
+### 9️⃣ Initialize & Apply Terraform  
+- Provisions the GKE cluster using **Terraform**.  
+
+### 1️⃣0️⃣ Generate Version Tag  
+- Creates a **new version tag** based on the number of commits in the repository.  
+
+### 1️⃣1️⃣ Build & Push Docker Image  
+- **Builds a Docker image** and pushes it to **Google Artifact Registry (GAR)**.  
+
+### 1️⃣2️⃣ Deploy to Kubernetes  
+- Updates the Kubernetes deployment with the new image and **restarts pods** to apply changes.  
+
+---
+
+The pipeline ensures **automated, secure, and efficient** deployment of the Flask-based **Dawgif** app.
 
 ---
 
