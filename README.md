@@ -1,4 +1,4 @@
-#dawgif
+# *dawgif*
 
 Dawgif is a **Flask-based** web application that dynamically serves a random dog GIF. The app is **containerized with Docker**, deployed on **Google Kubernetes Engine (GKE)**, and managed through **Terraform**. The **CI/CD pipeline** is automated using **GitHub Actions**, and the container images are stored in **Google Artifact Registry**
 
