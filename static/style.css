@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap'); /* apple-like font */
+
 body {
     text-align: center;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
     color: white;
     padding: 20px;
@@ -10,9 +12,25 @@ body {
     justify-content: center;
     align-items: center;
 }
-h1 {
-    margin-bottom: 20px;
+
+/* Header styling */
+.header {
+    position: absolute;
+    top: 5%;
+    text-align: center;
 }
+h1 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.subtitle {
+    font-size: 18px;
+    font-weight: 300;
+    opacity: 0.8;
+}
+
+/* GIF container */
 #gif-container {
     margin-top: 20px;
     background: white;
@@ -25,6 +43,8 @@ img {
     height: auto;
     border-radius: 10px;
 }
+
+/* Button Styling */
 button {
     margin-top: 20px;
     padding: 12px 25px;
