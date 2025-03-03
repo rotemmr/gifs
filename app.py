@@ -12,6 +12,9 @@ def get_git_version():
         
         # latest tag in repo
         version = subprocess.check_output([git_path, "describe", "--tags", "--abbrev=0"]).strip().decode()
+        
+        print(f"Git Version: {version}")
+        
         return version
     except subprocess.CalledProcessError:
         # default when theres no tag
