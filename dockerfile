@@ -8,7 +8,10 @@ WORKDIR /project
 COPY . /project/
 
 #requirements 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    apt-get update && \
+    apt-get install -y git && \
+    rm -rf /var/lib/apt/lists/*
 
 #port.5000 -> available (for flask)
 EXPOSE 5000
