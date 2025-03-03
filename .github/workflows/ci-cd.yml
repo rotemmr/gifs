@@ -88,7 +88,7 @@ jobs:
           terraform refresh -var="GCP_SA_KEY=$GCP_SA_KEY"
           terraform apply -auto-approve -var="GCP_SA_KEY=$GCP_SA_KEY" 
 
-      # Generate a new tag based on commit count
+      # generating tags based on commits
       - name: Generate Tag
         env:
           GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
           # Fetch existing tags from the remote
           git fetch --tags
 
-          # Check if the tag already exists, if it does increment
+          # if tag exists --> tag++
           while git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; do
             echo "Tag $VERSION already exists, incrementing version."
             COMMIT_COUNT=$((COMMIT_COUNT + 1))
