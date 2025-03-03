@@ -114,6 +114,8 @@ jobs:
 
       # build and push docker img --> GAR 
       - name: Build and Push Docker Image
+        env:
+          VERSION: ${{ env.VERSION }} 
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           docker build -t $IMAGE_NAME .
