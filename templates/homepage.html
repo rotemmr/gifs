@@ -14,7 +14,7 @@
 
     <div id="floating-dogs"></div>
 
-    
+    <!-- GIF centered below the text -->
     <div id="gif-container">
         <img id="dog-gif" src="https://via.placeholder.com/400x300?text=Loading..." alt="Dog GIF">
     </div>
@@ -26,7 +26,19 @@
             try {
                 const response = await fetch("https://dog.ceo/api/breeds/image/random");
                 const data = await response.json();
-                document.getElementById("dog-gif").src = data.message;
+                
+                const gif = document.getElementById("dog-gif");
+                
+                // Fade out current GIF
+                gif.style.opacity = 0;
+                
+                setTimeout(() => {
+                    // Change the image source
+                    gif.src = data.message;
+                    
+                    // Fade in new GIF
+                    gif.style.opacity = 1;
+                }, 800); // Wait for fade out before changing
             } catch (error) {
                 console.error("Error fetching GIF:", error);
             }
@@ -39,7 +51,7 @@
             dog.src = "static/dawg.png";
             dog.classList.add("floating-dog");
 
-            // random position and size
+            // Random position and size
             dog.style.left = Math.random() * 100 + "vw";
             dog.style.width = Math.random() * (80 - 40) + 40 + "px"; 
 
@@ -50,7 +62,7 @@
             }, 5000); 
         }
 
-        // generating floating dogs every 0.5 sec
+        // Generating floating dogs every 0.5 sec
         setInterval(createFloatingDog, 500);
     </script>
 </body>
