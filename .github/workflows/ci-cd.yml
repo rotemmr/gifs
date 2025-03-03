@@ -127,7 +127,7 @@ jobs:
           VERSION: ${{ env.VERSION }} 
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
-          docker build -t $IMAGE_NAME .
+          docker build -t $IMAGE_NAME --build-arg VERSION=$VERSION
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
 

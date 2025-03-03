@@ -7,11 +7,12 @@ WORKDIR /project
 #cp files
 COPY . /project/
 
+#getting the git tag version --> ENV VAR
+ARG VERSION
+ENV VERSION=$VERSION
+
 #requirements 
-RUN pip install --no-cache-dir -r requirements.txt && \
-    apt-get update && \
-    apt-get install -y git && \
-    rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -r requirements.txt 
 
 #port.5000 -> available (for flask)
 EXPOSE 5000
