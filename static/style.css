@@ -11,7 +11,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Keeps content aligned at the top */
 }
 
 /* Header */
@@ -35,13 +35,14 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 500px;
-    height: 500px;
+    width: 500px; /* Static size */
+    height: 375px; /* Static size */
     overflow: hidden;
     position: relative;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     background: white;
+    margin-top: 20px; /* Adds space between header and GIF */
 }
 
 #dog-gif {
