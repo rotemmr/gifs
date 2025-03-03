@@ -14,9 +14,11 @@
 
     <div id="floating-dogs"></div>
 
+    
     <div id="gif-container">
-        <img id="dog-gif" src="https://via.placeholder.com/400x300?text=Loading..." width="500px" height="500px" alt="Dog GIF">
+        <img id="dog-gif" src="https://via.placeholder.com/400x300?text=Loading..." alt="Dog GIF">
     </div>
+
     <button onclick="switchGif()">Switch GIF</button>
 
     <script>
@@ -37,7 +39,7 @@
             dog.src = "static/dawg.png";
             dog.classList.add("floating-dog");
 
-            // random pos and size
+            // random position and size
             dog.style.left = Math.random() * 100 + "vw";
             dog.style.width = Math.random() * (80 - 40) + 40 + "px"; 
 
@@ -48,7 +50,7 @@
             }, 5000); 
         }
 
-        // generating more dogs every 0.5 sec
+        // generating floating dogs every 0.5 sec
         setInterval(createFloatingDog, 500);
     </script>
 </body>

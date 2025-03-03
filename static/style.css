@@ -16,6 +16,7 @@ body {
     position: absolute;
     top: 5%;
     text-align: center;
+    width: 100%;
 }
 h1 {
     font-size: 80px;
@@ -26,6 +27,19 @@ h1 {
     font-size: 18px;
     font-weight: 300;
     opacity: 0.8;
+    margin-bottom: 20px;
+}
+
+/* GIF */
+#gif-container {
+    margin-top: 10px;
+}
+#dog-gif {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    border: none; /* Remove any border */
 }
 
 /* Floating Doggos */
@@ -57,20 +71,6 @@ h1 {
         transform: translateY(-120vh) rotate(360deg);
         opacity: 0;
     }
-}
-
-/* GIF container */
-#gif-container {
-    margin-top: 20px;
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
 }
 
 /* Button Styling */
