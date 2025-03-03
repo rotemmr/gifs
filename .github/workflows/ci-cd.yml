@@ -98,14 +98,14 @@ jobs:
           COMMIT_COUNT=$(git rev-list --count HEAD)
           VERSION="1.0.${COMMIT_COUNT}"
           echo "Generated version: $VERSION"
-          
+
           # Set the token for authentication
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Create and push the new tag
           git tag $VERSION
-          git remote set-url origin https://x-access-token:${GH_ADMIN}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${GH_ADMIN}@github.com/rotemmr/gifs
           git push origin $VERSION
 
       # build and push docker img --> GAR 
