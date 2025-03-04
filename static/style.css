@@ -117,3 +117,11 @@ button:hover {
     border-radius: 5px;
     z-index: 9999;
 }
+
+.visitor-count {
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    margin-top: 10px; 
+    font-weight: bold;
+}
