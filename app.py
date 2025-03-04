@@ -8,12 +8,19 @@ app = Flask(__name__)
 VISITOR_FILE = "data/visitors.txt"
 
 def VisitorCount():
+    os.makedirs("data", exist_ok=True)
+    
     if not os.path.exists(VISITOR_FILE):
-        os.makedirs("data", exist_ok=True)
         with open(VISITOR_FILE, "w") as f:
             f.write("0")
-    with open(VISITOR_FILE, "r") as f:
-        return int(f.read())
+    try:
+        with open(VISITOR_FILE, "r") as f:
+            count = f.read().strip()
+            return int(count) if count.isdigit() else 0
+    except ValueError:
+        return 0
+
+
     
 def IncVisitorCount():
     count = VisitorCount() + 1
