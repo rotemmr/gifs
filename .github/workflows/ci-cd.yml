@@ -12,6 +12,8 @@ jobs:
   # Build Stage
   build:
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.tag.outputs.VERSION }}  # Output the version from the 'Generate Tag' step
 
     steps:
       # checkout code
@@ -67,12 +69,14 @@ jobs:
             COMMIT_COUNT=$((COMMIT_COUNT + 1))
             VERSION="1.0.${COMMIT_COUNT}"
             echo "New version: $VERSION"
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
           done
 
           # Create and push the new tag
           git tag $VERSION
           git push origin $VERSION
+
+          # Set the VERSION as an output for the build job
+          echo "::set-output name=VERSION::$VERSION"
 
   # Docker Build Stage
   docker-build:
@@ -84,10 +88,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set VERSION as environment variable for the build step
+      # Use the VERSION from the build job output
       - name: Build Docker Image
         env:
-          VERSION: ${{ needs.build.outputs.VERSION }}  # Set VERSION as an environment variable for this step
+          VERSION: ${{ needs.build.outputs.VERSION }}  # Reference the VERSION from the build job
         run: |
           echo "Building Docker Image with version: $VERSION"
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
