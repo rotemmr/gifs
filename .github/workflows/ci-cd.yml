@@ -84,15 +84,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Use the VERSION variable from the build job
-      - name: Use Version from Build Job
+      # Set VERSION as environment variable for the build step
+      - name: Build Docker Image
+        env:
+          VERSION: ${{ needs.build.outputs.VERSION }}  # Set VERSION as an environment variable for this step
         run: |
-          echo "Building Docker Image with version: ${{ env.VERSION }}"
-          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:${{ env.VERSION }}"
-          docker build -t $IMAGE_NAME --build-arg VERSION=${{ env.VERSION }} .
+          echo "Building Docker Image with version: $VERSION"
+          IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
+          docker build -t $IMAGE_NAME --build-arg VERSION=$VERSION .
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
-
 
   # Deploy Stage
   deploy:
