@@ -83,9 +83,14 @@ jobs:
       # Build Docker Image
       - name: Build Docker Image
         env:
-          VERSION: ${{ env.VERSION }}  # Use the version generated in the previous step
+          VERSION: ${{ env.VERSION }}  # Ensure version is available here
         run: |
+          if [ -z "$VERSION" ]; then
+            echo "VERSION is not set, exiting."
+            exit 1
+          fi
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
+          echo "Building Docker image with tag: $IMAGE_NAME"
           docker build -t $IMAGE_NAME --build-arg VERSION=$VERSION .
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
@@ -131,6 +136,7 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
+          echo "Deploying $IMAGE_NAME to Kubernetes"
           kubectl set image deployment/flask-app-deployment flask-app=$IMAGE_NAME
           kubectl rollout restart deployment flask-app-deployment
           kubectl get pods -o wide
