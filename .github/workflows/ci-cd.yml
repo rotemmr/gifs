@@ -83,7 +83,7 @@ jobs:
       # Build Docker Image
       - name: Build Docker Image
         env:
-          VERSION: ${{ env.VERSION }}
+          VERSION: ${{ env.VERSION }}  # Use the version generated in the previous step
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           docker build -t $IMAGE_NAME --build-arg VERSION=$VERSION .
