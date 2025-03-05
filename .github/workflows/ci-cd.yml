@@ -135,6 +135,6 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
-          kubectl set image deployment/flask-app-deployment flask-container=$IMAGE_NAME
+          kubectl set image deployment/flask-app-deployment flask-app=$IMAGE_NAME
           kubectl rollout restart deployment flask-app-deployment
           kubectl get pods -o wide
