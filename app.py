@@ -22,10 +22,21 @@ def initialize_db():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    #Visitors Table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS visitors (
             id INT PRIMARY KEY AUTO_INCREMENT,
             count INT NOT NULL
+        )
+    """)
+
+    #Dog Gifs Table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS dog_gifs (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            gif_url VARCHAR(255) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     
