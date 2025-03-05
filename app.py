@@ -1,10 +1,41 @@
 from flask import Flask, render_template
+import mysql.connector
 import subprocess
 import shutil
 import os
 import fcntl
 
 app = Flask(__name__)
+
+#MySQL Creds
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST",),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+}
+
+def get_db_connection():
+    return mysql.connector.connect(**DB_CONFIG)
+
+def initialize_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS visitors (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            count INT NOT NULL
+        )
+    """)
+    
+    cursor.execute("SELECT COUNT(*) FROM visitors")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO visitors (count) VALUES (0)")
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 VISITOR_FILE = "data/visitors.txt"
 
@@ -43,21 +74,3 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-# def get_git_version():
-#    try:
-#        git_path = shutil.which("git")
-#        if git_path is None:
-#           raise FileNotFoundError("Git is not installed or not found in PATH.")
-#        
-#       # latest tag in repo
-#        version = subprocess.check_output([git_path, "describe", "--tags", "--abbrev=0"]).strip().decode()
-#        
-#        print(f"Git Version: {version}")
-#        
-#        return version
-#    except subprocess.CalledProcessError:
-#        # default when theres no tag
-#        return "1.0.0"
-#   except FileNotFoundError:
-#        return "Git not found"
