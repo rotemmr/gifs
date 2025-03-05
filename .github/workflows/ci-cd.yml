@@ -74,16 +74,23 @@ jobs:
           git tag $VERSION
           git push origin $VERSION
 
+          # Set VERSION as output for next job
+          echo "::set-output name=VERSION::$VERSION"
+
   # Docker Build Stage
   docker-build:
     needs: build  # This job depends on the build job
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       # Build Docker Image
       - name: Build Docker Image
         env:
-          VERSION: ${{ env.VERSION }}  # Ensure version is available here
+          VERSION: ${{ needs.build.outputs.VERSION }}  # Use the output from the build job
         run: |
           if [ -z "$VERSION" ]; then
             echo "VERSION is not set, exiting."
