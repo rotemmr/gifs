@@ -1,9 +1,6 @@
 #python compiler
 FROM python:3.9-slim
 
-# Install MySQL client to interact with the database
-RUN apt-get update && apt-get install -y mysql-client
-
 #setting dir
 WORKDIR /project
 
