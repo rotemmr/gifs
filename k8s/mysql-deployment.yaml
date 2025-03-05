@@ -14,15 +14,15 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:8.0.37  
+        image: mysql:8.0.37
         env:
           - name: MYSQL_ROOT_PASSWORD
-            value: ${DB_PASSWORD}  
+            value: "${{ secrets.DB_PASSWORD }}"
           - name: MYSQL_DATABASE
-            value: ${DB_NAME}  
+            value: "${{ secrets.DB_NAME }}"
           - name: MYSQL_USER
-            value: ${DB_USER}  
+            value: "${{ secrets.DB_USER }}"
           - name: MYSQL_PASSWORD
-            value: ${DB_PASSWORD}  
+            value: "${{ secrets.DB_PASSWORD }}"
         ports:
         - containerPort: 3306
