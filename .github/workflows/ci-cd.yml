@@ -164,7 +164,7 @@ jobs:
           kubectl rollout restart deployment flask-app-deployment
 
           MYSQL_IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-mysql:$VERSION"
-          kubectl set image deployment/mysql-deployment mysql-container=$MYSQL_IMAGE_NAME
+          kubectl set image deployment/mysql-deployment mysql=$MYSQL_IMAGE_NAME
           kubectl set env deployment/mysql-deployment \
             MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} \
             MYSQL_DATABASE=${{ secrets.DB_NAME }} \
