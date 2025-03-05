@@ -139,36 +139,17 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
 
-          MYSQL_IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-mysql:$VERSION"
-    
-          docker build \
-            -t $MYSQL_IMAGE_NAME \
-            --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --build-arg DB_NAME=${{ secrets.DB_NAME }} \
-            --build-arg DB_USER=${{ secrets.DB_USER }} \
-            .
-
-          docker push $MYSQL_IMAGE_NAME
-
       # deploy --> kubernetes + restart pods
       - name: Deploy to Kubernetes
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           kubectl set image deployment/flask-app-deployment flask-container=$IMAGE_NAME
           kubectl set env deployment/flask-app-deployment \
-          DB_HOST=${{ secrets.DB_HOST }} \
-          DB_USER=${{ secrets.DB_USER }} \
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-          DB_NAME=${{ secrets.DB_NAME }}
-
+            DB_HOST=${{ secrets.DB_HOST }} \
+            DB_USER=${{ secrets.DB_USER }} \
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            DB_NAME=${{ secrets.DB_NAME }}
           kubectl rollout restart deployment flask-app-deployment
 
-          MYSQL_IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-mysql:$VERSION"
-          kubectl set image deployment/mysql-deployment mysql=$MYSQL_IMAGE_NAME
-          kubectl set env deployment/mysql-deployment \
-            MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            MYSQL_DATABASE=${{ secrets.DB_NAME }} \
-            MYSQL_USER=${{ secrets.DB_USER }} \
-            MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
-          kubectl rollout restart deployment mysql-deployment
+          # Skip rebuilding MySQL image
           kubectl get pods -o wide

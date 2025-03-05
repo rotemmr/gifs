@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 #MySQL Creds
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST",),
+    "host": os.getenv("DB_HOST", "mysql-service"),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
     "database": os.getenv("DB_NAME"),

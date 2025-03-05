@@ -19,10 +19,12 @@ spec:
         - containerPort: 5000
         env:
           - name: DB_HOST
-            value: mysql-service  
+            value: mysql-service  # Internal service name of MySQL in the Kubernetes cluster
           - name: DB_USER
-            value: ${DB_USER}   
+            value: "${{ secrets.DB_USER }}"  # GitHub secret passed through the CI/CD pipeline
           - name: DB_PASSWORD
-            value: ${DB_PASSWORD}   
+            value: "${{ secrets.DB_PASSWORD }}"  # GitHub secret passed through the CI/CD pipeline
           - name: DB_NAME
-            value: ${DB_NAME} 
+            value: "${{ secrets.DB_NAME }}"  # GitHub secret passed through the CI/CD pipeline
+          - name: VERSION
+            value: "${{ env.VERSION }}"  # Inject version from the CI/CD pipeline
