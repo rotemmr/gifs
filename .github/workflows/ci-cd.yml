@@ -151,5 +151,5 @@ jobs:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
-          helm upgrade --install flask-app-release ./helm --namespace default --set image.tag=$VERSION
+          helm upgrade --install flask-app-release ./helm/flask-app --namespace default --set image.tag=$VERSION
           kubectl get pods -o wide
