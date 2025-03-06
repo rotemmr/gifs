@@ -92,6 +92,13 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           gcloud config set project devops-451510
 
+      - name: Install Helm
+        run: |
+          curl https://get.helm.sh/helm-v3.10.3-linux-amd64.tar.gz -o helm.tar.gz
+          tar -zxvf helm.tar.gz
+          sudo mv linux-amd64/helm /usr/local/bin/
+          helm version
+
       - name: Install Terraform
         run: |
           wget https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
@@ -139,11 +146,10 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           docker push $IMAGE_NAME
 
-      - name: Deploy to Kubernetes
+      - name: Deploy to Kubernetes with Helm
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
-          kubectl set image deployment/flask-app-deployment flask-app=$IMAGE_NAME
-          kubectl rollout restart deployment flask-app-deployment
+          helm upgrade --install flask-app-release ./helm --namespace default --set image.tag=$VERSION
           kubectl get pods -o wide
