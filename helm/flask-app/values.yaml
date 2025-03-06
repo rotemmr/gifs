@@ -1,0 +1,23 @@
+image:
+  repository: us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app
+  tag: "latest" #is overwritten in the pipeline with the $version tag
+
+replicaCount: 3
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000
+
+resources: 
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+
+
+
+
