@@ -1,26 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: flask-app-deployment
-spec: 
-  replicas: {{ .Values.replicaCount }}
-  selector: 
+spec:
+  replicas: 3
+  selector:
     matchLabels:
       app: flask-app
   template:
     metadata:
       labels:
         app: flask-app
-      spec: 
-        containers:
-          - name: flask-app
-            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  
-            ports:
-              - containerPort: {{ .Values.service.targetPort }}  
-            resources:
-              requests:
-                cpu: {{ .Values.resources.requests.cpu }}
-                memory: {{ .Values.resources.requests.memory }}
-              limits:
-                cpu: {{ .Values.resources.limits.cpu }}
-                memory: {{ .Values.resources.limits.memory }}
+    spec:
+      containers:
+      - name: flask-app
+        image: "us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 5000
