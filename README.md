@@ -22,46 +22,61 @@ Dawgif is a **Flask-based** web application that dynamically serves a random dog
 
 ---
 
-## ⚙️ CI/CD Pipeline Flow  
+## CI/CD Pipeline Workflow
 
-This project uses **GitHub Actions** to automate testing, building, and deployment. Below is the step-by-step flow of the CI/CD pipeline:  
+### 1️⃣ **Code Push & CI/CD Trigger**
+- ✔️ The workflow is triggered by pushes and pull requests to the `main` branch.
 
-### 1️⃣ Code Push & CI/CD Trigger  
-- A push to the `main` branch or a pull request triggers the pipeline.  
+### 2️⃣ **Checkout Code**
+- ✔️ The `actions/checkout@v2` action is used to pull the latest code from the repository.
 
-### 2️⃣ Checkout Repository  
-- The workflow pulls the latest code from the repository.  
+### 3️⃣ **Set Up Python Environment**
+- ✔️ Python 3.9 is set up using `actions/setup-python@v2`.
+- ✔️ Dependencies are installed from `requirements.txt` using `pip install`.
 
-### 3️⃣ Install Terraform  
-- Downloads and installs **Terraform** for infrastructure management.  
+### 4️⃣ **Generate Version Tag**
+- ✔️ The workflow generates a unique version tag based on the commit count.
+- ✔️ The version tag is pushed back to the repository to ensure consistency in deployment.
+- ✨ **Improvement**: `::set-output` is deprecated, so the version info is now stored in the environment using `echo "VERSION=$VERSION" >> $GITHUB_ENV`.
 
-### 4️⃣ Set Up Python Environment  
-- Installs Python and dependencies from `requirements.txt`.  
+### 5️⃣ **Install Dependencies**
+- ✔️ Python dependencies are installed using `pip`.
 
-### 5️⃣ Run Tests  
-- Executes unit tests to ensure the application is working correctly.  
+### 6️⃣ **Run Unit Tests**
+- ✔️ Unit tests are run using the `unittest discover` command to ensure the application works as expected.
 
-### 6️⃣ Authenticate with Google Cloud  
-- Uses a **service account key** to log in to Google Cloud and set the correct project.  
+### 7️⃣ **Authenticate with Google Cloud**
+- ✔️ The Google Cloud Service Account key (`GCP_SA_KEY`) is securely used for authentication.
+- ✔️ The key is saved in a temporary file, and `gcloud auth` is used for authentication.
 
-### 7️⃣ Install GKE Auth Plugin & kubectl  
-- Installs tools required to interact with **Google Kubernetes Engine (GKE)**.  
+### 8️⃣ **Install Helm**
+- ✔️ Helm is downloaded and installed to manage Kubernetes deployments.
 
-### 8️⃣ Get GKE Cluster Credentials  
-- Retrieves Kubernetes credentials to deploy the application.  
+### 9️⃣ **Install Terraform**
+- ✔️ Terraform is installed to manage infrastructure provisioning on Google Cloud.
 
-### 9️⃣ Initialize & Apply Terraform  
-- Provisions the GKE cluster using **Terraform**.  
+### 🔟 **Add GCP GPG Key**
+- ✔️ The GPG key is added to the system to install packages from Google Cloud.
 
-### 1️⃣0️⃣ Generate Version Tag  
-- Creates a **new version tag** based on the number of commits in the repository.  
+### 1️⃣1️⃣ **Install GKE Auth Plugin & kubectl**
+- ✔️ The GKE authentication plugin and `kubectl` are installed for managing Kubernetes clusters.
 
-### 1️⃣1️⃣ Build & Push Docker Image  
-- **Builds a Docker image** and pushes it to **Google Artifact Registry (GAR)**.  
+### 1️⃣2️⃣ **Get GKE Cluster Credentials**
+- ✔️ The workflow configures `kubectl` with the correct GKE cluster credentials to allow for deployments to the Kubernetes cluster.
 
-### 1️⃣2️⃣ Deploy to Kubernetes  
-- Updates the Kubernetes deployment with the new image and **restarts pods** to apply changes.  
+### 1️⃣3️⃣ **Initialize Terraform**
+- ✔️ Terraform is initialized in the `terraform-gke` directory, preparing it to manage the Google Cloud infrastructure.
 
+### 1️⃣4️⃣ **Apply Terraform**
+- ✔️ Terraform `apply` is executed to provision or update the infrastructure on Google Cloud.
+
+### 1️⃣5️⃣ **Build & Push Docker Image**
+- ✔️ The Docker image is built using the generated version tag and pushed to the Google Artifact Registry.
+- ✨ **Consideration**: You can add `docker-compose` or `docker buildx` for multi-platform builds if necessary.
+
+### 1️⃣6️⃣ **Deploy to Kubernetes with Helm**
+- ✔️ The latest Docker image is deployed to the Kubernetes cluster using Helm.
+- ✔️ `kubectl get pods -o wide` is used to confirm that the Kubernetes deployment was successfully updated.
 ---
 
 The pipeline ensures **automated, secure, and efficient** deployment of the Flask-based **Dawgif** app.
