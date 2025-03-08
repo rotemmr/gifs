@@ -15,9 +15,10 @@ Dawgif is a **Flask-based** web application that dynamically serves a random dog
 
 ---
 
-## 📌 Project Architecture Diagram
+## 📌 Pipeline Flow Chart
 
-*(Insert an architecture diagram here if available)*  
+![Pipeline Flow Chart](https://github.com/user-attachments/assets/9107e140-0309-4867-b2f5-cb2e27fc2196)
+
 
 ---
 
