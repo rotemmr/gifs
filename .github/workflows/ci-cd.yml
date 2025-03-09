@@ -149,7 +149,20 @@ jobs:
       - name: Deploy to Kubernetes with Helm
         env:
           VERSION: ${{ needs.build.outputs.version }}
+          DB_HOST: "mariadb-service"  # Point to MariaDB service in the cluster
+          DB_NAME: "mysql-db"  # Database name
+          DB_USER: ${{ secrets.DB_USER }}  # Correct GitHub secret for DB user
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}  # Correct GitHub secret for DB password
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
-          helm upgrade --install flask-app-release ./helm/flask-app --namespace default --set image.tag=$VERSION
+          helm upgrade --install flask-app-release ./helm/flask-app --namespace default \
+            --set image.tag=$VERSION \
+            --set env.DB_HOST=$DB_HOST \
+            --set env.DB_USER=$DB_USER \
+            --set env.DB_PASSWORD=$DB_PASSWORD \
+            --set env.DB_NAME=$DB_NAME \
+            --set mariadb.rootPassword=$DB_PASSWORD \
+            --set mariadb.dbName=$DB_NAME \
+            --set mariadb.dbUser=$DB_USER \
+            --set mariadb.dbPassword=$DB_PASSWORD
           kubectl get pods -o wide

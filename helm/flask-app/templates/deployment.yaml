@@ -16,4 +16,19 @@ spec:
       - name: flask-app
         image: "us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:{{ .Values.image.tag }}"
         ports:
-        - containerPort: 5000
+          - containerPort: 5000
+        env:
+          - name: DB_HOST
+            value: "{{ .Values.env.DB_HOST }}"  # Resolves to "mariadb-service"
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: flask-app-secrets
+                key: DB_USER  # Correctly referencing DB_USER from the Kubernetes secret
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: flask-app-secrets
+                key: DB_PASSWORD  # Correctly referencing DB_PASSWORD from the Kubernetes secret
+          - name: DB_NAME
+            value: "{{ .Values.env.DB_NAME }}"

@@ -17,6 +17,21 @@ resources:
     cpu: 200m
     memory: 256Mi
 
+env:
+  DB_HOST: "mariadb-service"  # Point to the MariaDB service within Kubernetes
+  DB_USER: {{ .Values.secrets.DB_USER }}  # Referencing DB_USER from GitHub secrets
+  DB_PASSWORD: {{ .Values.secrets.DB_PASSWORD }}  # Referencing DB_PASSWORD from GitHub secrets
+  DB_NAME: "mysql-db"  # Updated to mysql-db
+
+# MariaDB setup
+mariadb:
+  image: "mariadb:latest"
+  rootPassword: {{ .Values.secrets.DB_PASSWORD }}  # Root password from GitHub secrets
+  dbName: "mysql-db"  # Database name
+  dbUser: {{ .Values.secrets.DB_USER }}  # User for DB connection from GitHub secrets
+  dbPassword: {{ .Values.secrets.DB_PASSWORD }}
+
+
 
 
 
