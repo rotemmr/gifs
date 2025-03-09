@@ -17,3 +17,6 @@ spec:
         image: "us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:{{ .Values.image.tag }}"
         ports:
         - containerPort: 5000
+        envFrom:
+        - secretRef:
+            name: flask-app-secrets 
