@@ -9,6 +9,8 @@ __pycache__/
 venv/
 env/
 
+*.env
+
 # Flask and Docker specific files
 *.log
 *.sqlite3

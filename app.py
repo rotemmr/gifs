@@ -1,10 +1,25 @@
 from flask import Flask, render_template
-import subprocess
-import shutil
+from dotenv import load_dotenv
 import os
 import fcntl
+import mysql.connector
 
 app = Flask(__name__)
+
+#load_dotenv()
+
+#DB_HOST = os.getenv("DB_HOST")
+#DB_USER = os.getenv("DB_USER")
+#B_PASSWORD = os.getenv("DB_PASSWORD")
+#DB_NAME = os.getenv("DB_NAME")
+#
+#def get_db_connection():
+#    return mysql.connector.connect(
+#        host=DB_HOST,
+#        user=DB_USER,
+#        password=DB_PASSWORD,
+#        database=DB_NAME,
+#    )
 
 VISITOR_FILE = "data/visitors.txt"
 
@@ -44,20 +59,3 @@ def home():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
-# def get_git_version():
-#    try:
-#        git_path = shutil.which("git")
-#        if git_path is None:
-#           raise FileNotFoundError("Git is not installed or not found in PATH.")
-#        
-#       # latest tag in repo
-#        version = subprocess.check_output([git_path, "describe", "--tags", "--abbrev=0"]).strip().decode()
-#        
-#        print(f"Git Version: {version}")
-#        
-#        return version
-#    except subprocess.CalledProcessError:
-#        # default when theres no tag
-#        return "1.0.0"
-#   except FileNotFoundError:
-#        return "Git not found"
