@@ -2,37 +2,49 @@ from flask import Flask, render_template
 import subprocess
 import shutil
 import os
+import mariadb
 import fcntl
 
 app = Flask(__name__)
 
+def get_db_connection():
+    connection = mariadb.connect(
+        host='35.194.26.110',  
+        user='root',               
+        password='12481478Rr',  
+        database='myapp'           
+    )
+    return connection
+
+
+
 VISITOR_FILE = "data/visitors.txt"
 
 def VisitorCount():
-    os.makedirs("data", exist_ok=True)
-
-    if not os.path.exists(VISITOR_FILE):
-        with open(VISITOR_FILE, "w") as f:
-            f.write("0")
-
     try:
-        with open(VISITOR_FILE, "r") as f:
-            count = f.read().strip()
-            return int(count) if count.isdigit() else 0
-    except ValueError:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT COUNT(*) FROM visitors")
+        result = cursor.fetchone() 
+        cursor.close()
+        connection.close()
+        return result[0] if result else 0
+    except mariadb.Error as e:
+        print(f"Error connecting to database: {e}")
         return 0
 
 def IncVisitorCount():
-    count = VisitorCount() + 1
-
-    with open(VISITOR_FILE, "r+") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        f.seek(0)
-        f.write(str(count))
-        f.flush()
-        fcntl.flock(f, fcntl.LOCK_UN)
-
-    return count
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO visitors (id) VALUES (NULL)")
+        connection.commit()  
+        cursor.close()
+        connection.close()
+        return VisitorCount()
+    except mariadb.Error as e:
+        print(f"Error connecting to database: {e}")
+        return VisitorCount()
 
 
 @app.route("/")
