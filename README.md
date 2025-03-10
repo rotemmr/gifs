@@ -92,4 +92,5 @@ The pipeline ensures **automated, secure, and efficient** deployment of the Flas
 - **GitHub Actions** – CI/CD automation  
 - **Terraform** – Infrastructure provisioning  
 - **Google Artifact Registry** – Image storage  
-- **Google Kubernetes Engine (GKE)** – Kubernetes hosting  
+- **Google Kubernetes Engine (GKE)** – Kubernetes hosting
+- **Helm** - Easier deploying with kubernetes  
