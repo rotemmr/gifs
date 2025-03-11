@@ -56,10 +56,13 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
+    
+          # Build the Docker image
           docker build -t $IMAGE_NAME --build-arg VERSION=$VERSION .
           
           # Authenticate Docker with Google Cloud using your service account
-          echo ${{ secrets.GCP_SA_KEY }} | gcloud auth activate-service-account --key-file=-
+          echo "${{ secrets.GCP_SA_KEY }}" > $HOME/gcp-key.json
+          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
           # Push the Docker image to Google Artifact Registry
