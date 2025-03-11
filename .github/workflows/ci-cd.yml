@@ -56,11 +56,6 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
-          - name: Build Docker Image
-  env:
-    VERSION: ${{ steps.tag.outputs.version }}
-    GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  run: |
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           
           # Write the GCP SA key to a file in /tmp as valid JSON
