@@ -59,7 +59,7 @@ jobs:
           IMAGE_NAME="us-central1-docker.pkg.dev/devops-451510/my-docker-repo/project-flask-app:$VERSION"
           
           # Write the GCP SA key to a file in /tmp as valid JSON
-          echo "${{ secrets.GCP_SA_KEY }}" > /tmp/gcp-key.json
+          echo "$GCP_SA_KEY" > /tmp/gcp-key.json
           
           # Check if the key is correctly written
           cat /tmp/gcp-key.json
